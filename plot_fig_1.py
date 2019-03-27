@@ -18,14 +18,22 @@ X, Y = np.meshgrid(x0, x1)
 
 x = X.flatten()
 y = Y.flatten()
-Z = function_q(x,y)
 
-fig = plt.figure(Z)
+Z_test = function_2(np.array([x, y]))
+print(Z_test.shape)
+
+Z = function_q(X,Y)
+print(Z.shape)
+
+#plt.plot(X,Y,Z)
+plt.plot(x, y, Z_test)
+
+fig = plt.figure()
 ax = Axes3D(fig)
 
 ax.set_xlabel("x0")
 ax.set_ylabel("x1")
 ax.set_zlabel("f(x)")
 
-ax.plot_wireframe(X, Y, Z)
+ax.plot_wireframe(x, y, Z_test)
 plt.show()
