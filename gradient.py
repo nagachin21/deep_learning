@@ -11,6 +11,7 @@ def function(x):
 def tangent_line(f, x):
     d = numerical_diff(f, x)
     print(d)
+    y = f(x) - d * x
     return lambda t: d*t + y
 
 x = np.arange(0.0, 20.0, 0.1)
