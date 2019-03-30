@@ -20,10 +20,10 @@ x = X.flatten()
 y = Y.flatten()
 
 Z_test = function_2(np.array([x, y]))
-print(Z_test.shape)
+#print(Z_test.shape)
 
-Z = function_q(X,Y)
-print(Z.shape)
+#Z = function_q(X,Y)
+#print(Z.shape)
 
 #plt.plot(X,Y,Z)
 plt.plot(x, y, Z_test)

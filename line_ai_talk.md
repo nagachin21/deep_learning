@@ -20,7 +20,7 @@ add if silent(AiS)rule
 
 →　２、３、４つレファレンスベクトルを増加させることが可能だが、計算量も増加
 
-#### Add if ERROR by WTA(マージン付きWTA)
+#### Add if Silent by WTA(マージン付きWTA)
 
 ＊voronoi partition
 
