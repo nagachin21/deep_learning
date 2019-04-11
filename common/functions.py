@@ -9,3 +9,6 @@ def softmax(x):
 def cross_entropy_error(y, t):
     delta = 1e-7
     return - np.sum(t * np.log(y + delta))
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
