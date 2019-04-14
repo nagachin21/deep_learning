@@ -1,7 +1,7 @@
 import sys, os
 sys.path.append("../")
 from common.functions import *
-from commmon.gradient import numerical_gradient
+from common.gradient import numerical_gradient
 
 class TwoLayerNet:
     def __init__(self, input_size, hidden_size, output_size, weight_init_std=0.01):
@@ -20,7 +20,7 @@ class TwoLayerNet:
 
         a1 = np.dot(x, W1) + b1
         z1 = sigmoid(a1)
-        a2 = np.dot(z1, w2) + b2
+        a2 = np.dot(z1, W2) + b2
 
         y  = softmax(a2)
 
