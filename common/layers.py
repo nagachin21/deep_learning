@@ -1,4 +1,5 @@
 import numpy as np
+from common.functions import *
 
 class Relu:
     def __init__(self):
