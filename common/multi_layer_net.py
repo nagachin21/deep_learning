@@ -75,5 +75,84 @@ class MultiLayerNet:
 
         Parameters
         ----------
-        
+        x : 入力データ
+        t : 教師ラベル
+
+        Returns
+        -------
+        損失関数の値
         """
+        y = self.predict(x)
+
+        weight_decay = 0
+        for idx in range(1, self.hidden_layer_num+2):
+            W = self.params['W' + str(idx)]
+            weight_decay += 0.5 * self.weight_decay_lambda * np.sum(W ** 2)
+
+        return self.last_layer.forward(y, t) + weight_decay
+
+    def accuracy(self, x, t):
+        y = self.predict(x)
+        y = np.argmax(y, axis=1)
+        if t.ndim != 1 : t = np.argmax(t, axis=1)
+
+        accuracy = np.sum(y == t) / float(x.shape[0])
+        return accuracy
+
+    def numerical_gradient(self, x, t):
+        """勾配を求める（数値微分）
+
+        Patameters
+        ----------
+        x : 入力データ
+        t : 教師ラベル
+
+        Returns
+        -------
+        各層の勾配を持ったディクショナリ変数
+            grads['W1'], grads['W2'], ... は各層の重み
+            grads['b1'], grads['b2'], ... は各層のバイアス
+        """
+        loss_W = lambda W: self.loss(x, t)
+
+        grads = {}
+        for idx in range(1, self.hidden_layer_num+2):
+            grads['W' + str(idx)] = numerical_gradient(loss_W, self.params['W' + str(idx)])
+            grads['b' + str(idx)] = numerical_gradient(loss_W, self.params['b' + str(idx)])
+
+        return grads
+
+    def gradient(self, x, t):
+        """勾配を求める（誤差逆伝播法）
+
+        Parameters
+        ----------
+        x : 入力データ
+        t : 教師ラベル
+
+        Returns
+        -------
+        各層の勾配を持ったディクショナリ変数
+            grads['W1'], grads['W2'], ... は各層の重み
+            grads['b1'], grads['b2'], ... は各層のバイアス
+        """
+
+        #forward
+        self.loss(x, t)
+
+        #backward
+        dout = 1
+        dout = self.last_layer.backward(dout)
+
+        layers = list(self.layers.values())
+        layers.reverse()
+        for layer in layers:
+            dout = layer.backward()
+
+        #設定
+        grads = {}
+        for idx in range(1, self.hidden_layer_num+2):
+            grads['W' + str(idx)] = self.layers['Affine' + str(idx)].dw + self.weight_decay_lambda * self.layers['Affine' + str(idx)].W
+            grads['b' + str(idx)] = self.layers['Affine' + str(idx)].db
+
+        return grads
