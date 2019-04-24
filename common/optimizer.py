@@ -21,7 +21,7 @@ class Momentum:
                 self.v[key] = np.zeros_like(val)
 
         for key in params.keys():
-            self.v = self.momentum * self.v[key] - self.lr * grads[key]
+            self.v[key] = self.momentum * self.v[key] - self.lr * grads[key]
             params[key] += self.v[key]
 
 class AdaGrad:
@@ -36,15 +36,15 @@ class AdaGrad:
                 self.h[key] = np.zeros_like(val)
 
         for key in params.keys():
-            self.h += grads[key] * grad[key]
-            params[key] -= self.lr * self.grads[key] / (np.sqrt(self.h) + 1e-7)
+            self.h[key] += grads[key] * grads[key]
+            params[key] -= self.lr * grads[key] / (np.sqrt(self.h[key]) + 1e-7)
 
 class Adam:
     def __init__(self, lr=0.01, beta1=0.9, beta2=0.999):
         self.lr = lr
         self.beta1 = beta1
         self.beta2 = beta2
-        self.iter = None
+        self.iter = 0
         self.m = None
         self.v = None
 
@@ -60,8 +60,6 @@ class Adam:
 
         for key in params.keys():
             self.m[key] += (1 - self.beta1) * (grads[key] - self.m[key])
-            self.v[key] += (1 - self.bata2) * (grads[key]**2 - self.v[key])
+            self.v[key] += (1 - self.beta2) * (grads[key]**2 - self.v[key])
 
-            self.param[key] -= lr_t * self.m[key] / (np.sqrt(1 - self.v[key]) + 1e-7)
-
-            
+            params[key] -= lr_t * self.m[key] / (np.sqrt(1 - self.v[key]) + 1e-7)
