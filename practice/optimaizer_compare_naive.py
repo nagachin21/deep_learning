@@ -63,3 +63,5 @@ for key in optimizers:
     plt.title(key)
     plt.xlabel("x")
     plt.ylabel("y")
+
+plt.show()
