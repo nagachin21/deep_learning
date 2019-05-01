@@ -77,3 +77,78 @@ class MultiLayerNetExtend:
                 scale = np.sqrt(1.0 / all_size_list[idx - 1]) # Sigmoidを利用する際に推奨される初期値
             self.params['W' + str(idx)] = scale * np.random.randn(all_size_list[idx - 1], all_size_list[idx])
             self.params['b' + str(idx)] = np.zeros(all_size_list[idx])
+
+    def predict(self, x, train_flag=False):
+        for key, layer in layers.items():
+            if 'Dropout' in key or 'BatchNorm' in key:
+                x = layer.forward(x, train_flag)
+            else:
+                x = layer.forward(x)
+
+        return x
+
+    def loss(self, x, t, train_flag=False):
+        """損失関数を求める
+        引数のxは入力データ、tは教師ラベル
+        """
+        y = self.predict(x, train_flag)
+
+        weight_decay = 0
+        for idx in range(1, hidden_layer_num + 2):
+            W = self.params['W' + str(idx)]
+            weight_decay += 0.5 * self.weight_decay_lambda * np.sum(W**2)
+
+        return self.last_layer.forward(y, t) + weight_decay
+
+    def accuracy(self, x, t):
+        y = self.predict(x, t, train_flag=False)
+        y = np.arange(y, axis=1)
+        if t.ndim != 1: t = np.argmax(t, axis=1)
+
+        accuracy = np.sum(y == t) / float(x.shape[0])
+        return accuracy
+
+    def numerical_gradient(self, x, t):
+        """勾配を求める（数値微分）
+
+        Parameters
+        ----------
+        x : 入力データ
+        t : 教師ラベル
+
+        Returns
+        -------
+        各層の勾配を持ったディクショナリ変数
+            grads['W1'], grads['W2'], ...は各層の重みに対する勾配
+            grads['b1'], grads['b2'], ...は各層のバイアスに対する勾配
+        """
+
+        loss_W = lambda W: self.loss(x, t, train_flag=True)
+        #loss_W = lambda W: self.loss(x, t, train_flag=False)
+
+        grads = {}
+        for idx in range(1, hidden_layer_num + 1):
+            grads['W' + str(idx)] = numerical_gradient(loss_W, self.params['W' + str(idx)])
+            grads['b' + str(idx)] = numerical_gradient(loss_W, self.params['b' + str(idx)])
+
+            if self.use_batchnorm and idx != self.hidden_layer_num + 1:
+                grads['gamma' + str(idx)] = numerical_gradient(loss_W, self.params['gamma' + str(idx)])
+                grads['beta' + str(idx)] = numerical_gradient(loss_W, self.params['beta' + str(idx)])
+
+        return grads
+
+    def gradient(self, x, t):
+        #forward
+        self.loss(x, t)
+
+        #backward
+        dout = 1
+        dout = self.last_layer.backward(dout)
+
+        layers = list(self.layers.values())
+        layers.reverse()
+        for layer in layers:
+            dout = layer.backward(dout)
+
+         #求めた勾配を設定
+         
