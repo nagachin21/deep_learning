@@ -9,17 +9,17 @@ from two_layer_net import TwoLayerNet
 (x_train, t_train), (x_test, t_test) = \
     load_mnist(normalize=True, one_hot_label=True)
 
-train_loss_list = []
-train_acc_list  = []
-test_acc_list   = []
-#１エポックあたりの繰り返し数
-iter_per_epoch = max(train_size / batch_size, 1)
-
 #ハイパーパラメータ
 iters_sum  = 10000              #イテレーション
 train_size = x_train.shape[0]
 batch_size = 100                #ミニバッチサイズ
 learning_rate = 0.1             #学習率
+
+train_loss_list = []
+train_acc_list  = []
+test_acc_list   = []
+#１エポックあたりの繰り返し数
+iter_per_epoch = max(train_size / batch_size, 1)
 
 network = TwoLayerNet(input_size=784, hidden_size=50, output_size=10)
 
@@ -48,7 +48,7 @@ for i in range(iters_sum):
         test_acc_list.append(test_acc)
         print("train acc, test acc | " + str(train_acc) + ", " + str(test_acc))
 
-    print('イテレーション: ' + str(i) + '　勾配：' + str(loss))
+    print('イテレーション: ' + str(i) + '　コスト関数値：' + str(loss))
 
 
 #学習経過のグラフ描画
