@@ -151,4 +151,13 @@ class MultiLayerNetExtend:
             dout = layer.backward(dout)
 
          #求めた勾配を設定
-         
+         grads = {}
+         for idx in range(1, self.hidden_layer_num+1):
+             grads['W' + str(idx)] = self.layers[Affine + str(idx)].dw + self.weight_decay_lambda * self.params['W' + str(idx)]
+             grads['b' + str(idx)] = self.layers[Affine + str(idx)].db
+
+             if self.use_batchnorm and idx != self.hidden_layer_num+1:
+                 grads['gamma' + str(idx)] = self.layers['BatchNorm' + str(idx)].dgamma
+                 grads['beta' + str(idx)]  = self.layers['BatchNorm' + str(idx)].dbeta
+
+         return grads
