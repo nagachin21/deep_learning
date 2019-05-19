@@ -1,5 +1,5 @@
 import os, sys
-sys.path.append(pardir)
+sys.path.append(os.pardir)
 import numpy as np
 from common.optimizer import *
 
@@ -7,7 +7,7 @@ class Trainer:
     """
     ニューラルネットワークのトレーニングを行うクラス
     """
-    def __init__(self, network, x_train, t_train, x_test, t_test, epochs=20
+    def __init__(self, network, x_train, t_train, x_test, t_test, epochs=20,
                  mini_batch_size=100, optimizer='sgd', optimizer_param={'lr': 0.01},
                  evaluate_sample_num_per_epoch=None, verbose=True):
         self.network = network
