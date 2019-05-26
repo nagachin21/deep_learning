@@ -34,7 +34,7 @@ print("Saved Network Parameters!")
 markers = {'train':'o', 'test': 's'}
 x = np.arange(max_epochs)
 plt.plot(x, trainer.train_acc_list, marker='o', label='train', markevery=2)
-plt.plot(y, trainer.test_acc_list, marker='s', label='test', markevery=2)
+plt.plot(x, trainer.test_acc_list, marker='s', label='test', markevery=2)
 plt.xlabel('epochs')
 plt.ylabel('accuracy')
 plt.ylim(0, 1.0)
